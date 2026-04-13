@@ -1,0 +1,61 @@
+name: CI — Expense API
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  pipeline:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # ── 2. Setup PHP ─────────────────────────────────────────────────────────
+      - name: Setup PHP 8.1
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.1"
+          extensions: sqlite3, pdo_sqlite, mbstring, pcov
+          ini-values: pcov.enabled=1
+          coverage: pcov
+          tools: composer:v2
+
+      # ── 3. Instalar dependências ──────────────────────────────────────────────
+      - name: Instalar dependências (Composer)
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      # ── 4. Análise estática (PHPStan) ─────────────────────────────────────────
+      - name: Análise estática — PHPStan level 5
+        run: vendor/bin/phpstan analyse src/ --level=5 --no-progress
+
+      # ── 5. Padrões de código (PHPCS) ──────────────────────────────────────────
+      - name: Padrões de código — PHPCS PSR-12
+        run: vendor/bin/phpcs --standard=PSR12 src/
+
+      # ── 6. Testes automatizados com cobertura ─────────────────────────────────
+      - name: Testes automatizados — PHPUnit
+        run: >
+          vendor/bin/phpunit
+          --coverage-clover=coverage.xml
+          --coverage-text
+        env:
+          APP_ENV: testing
+          DB_PATH: ":memory:"
+          JWT_SECRET: github-actions-ci-secret
+
+      # ── 7. Armazenar artefato de cobertura ────────────────────────────────────
+      - name: Publicar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: |
+            coverage.xml
+            junit.xml
+          retention-days: 30

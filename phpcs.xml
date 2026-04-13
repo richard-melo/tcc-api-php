@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<ruleset name="expense-api">
+    <description>Padrão PSR-12 — projeto TCC expense-api</description>
+
+    <!-- Diretório analisado -->
+    <file>src</file>
+
+    <!-- Ignora vendor -->
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>tests/*</exclude-pattern>
+
+    <!-- Padrão base -->
+    <rule ref="PSR12"/>
+
+    <!-- Apenas arquivos PHP -->
+    <arg name="extensions" value="php"/>
+
+    <!-- Saída colorida e com o caminho do arquivo -->
+    <arg name="colors"/>
+    <arg value="sp"/>
+</ruleset>

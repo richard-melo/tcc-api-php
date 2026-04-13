@@ -1,0 +1,10 @@
+parameters:
+    level: 5
+    paths:
+        - src
+    excludePaths:
+        - vendor
+    checkMissingIterableValueType: false
+    # Permite exit() nos middlewares (padrão em APIs PHP puro sem framework)
+    ignoreErrors:
+        - '#Call to function exit\(\)#'

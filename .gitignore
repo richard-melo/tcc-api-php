@@ -1,0 +1,33 @@
+# Dependências
+vendor/
+
+# Banco de dados
+storage/
+*.sqlite
+*.db
+
+# Ambiente local
+.env
+
+# Relatórios gerados pelo CI (não versionar — gerados em cada run)
+coverage.xml
+junit.xml
+
+# Cache das ferramentas
+.phpunit.cache/
+.phpstan/
+.php-cs-fixer.cache
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+Desktop.ini
