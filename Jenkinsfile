@@ -36,7 +36,7 @@ pipeline {
         // ── 3. Instalar dependências ─────────────────────────────────────────
         stage('Instalar dependências (Composer)') {
             steps {
-                sh 'composer install --no-interaction --prefer-dist --no-progress'
+                sh 'composer install --no-interaction --prefer-dist --no-progress --no-security-blocking'
             }
         }
 
