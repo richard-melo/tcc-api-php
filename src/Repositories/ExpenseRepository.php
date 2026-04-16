@@ -112,6 +112,15 @@ class ExpenseRepository
         ');
         $stmt->execute([$userId, $startDate, $endDate]);
 
-        return $stmt->fetchAll();
+        return array_map(static function (array $row): array {
+            return [
+                'category'     => $row['category'],
+                'total_count'  => (int)   $row['total_count'],
+                'total_amount' => (float) $row['total_amount'],
+                'avg_amount'   => (float) $row['avg_amount'],
+                'min_amount'   => (float) $row['min_amount'],
+                'max_amount'   => (float) $row['max_amount'],
+            ];
+        }, $stmt->fetchAll(PDO::FETCH_ASSOC));
     }
 }
