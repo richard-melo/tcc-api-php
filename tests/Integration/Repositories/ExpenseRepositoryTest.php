@@ -151,7 +151,7 @@ class ExpenseRepositoryTest extends DatabaseTestCase
 
         // alimentacao deve vir primeiro (maior total)
         $this->assertSame('alimentacao', $summary[0]['category']);
-        $this->assertSame('2', $summary[0]['total_count']);
+        $this->assertSame(2, $summary[0]['total_count']);
         $this->assertEqualsWithDelta(80.00, (float) $summary[0]['total_amount'], 0.01);
     }
 
