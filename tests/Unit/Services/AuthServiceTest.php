@@ -162,4 +162,60 @@ class AuthServiceTest extends TestCase
 
         $this->authService->validateToken('token.invalido.aqui');
     }
+
+    public function testValidateTokenContainsEmailClaim(): void
+    {
+        $fakeUser = User::fromArray([
+            'id'       => 7,
+            'name'     => 'Maria',
+            'email'    => 'maria@teste.com',
+            'password' => 'hashed',
+        ]);
+
+        $this->userRepo->method('findByEmail')->willReturn(null);
+        $this->userRepo->method('create')->willReturn($fakeUser);
+
+        $result = $this->authService->register('Maria', 'maria@teste.com', 'senha123');
+        $claims = $this->authService->validateToken($result['token']);
+
+        $this->assertArrayHasKey('email', $claims);
+        $this->assertSame('maria@teste.com', $claims['email']);
+    }
+
+    public function testLoginReturnsUserDataAlongWithToken(): void
+    {
+        $fakeUser = User::fromArray([
+            'id'       => 3,
+            'name'     => 'Pedro',
+            'email'    => 'pedro@teste.com',
+            'password' => password_hash('senha456', PASSWORD_BCRYPT),
+        ]);
+
+        $this->userRepo->method('findByEmail')->willReturn($fakeUser);
+
+        $result = $this->authService->login('pedro@teste.com', 'senha456');
+
+        $this->assertArrayHasKey('user', $result);
+        $this->assertSame('Pedro', $result['user']['name']);
+        $this->assertSame('pedro@teste.com', $result['user']['email']);
+        $this->assertArrayNotHasKey('password', $result['user']);
+    }
+
+    public function testRegisterPasswordExactlyMinLengthSucceeds(): void
+    {
+        $fakeUser = User::fromArray([
+            'id'       => 5,
+            'name'     => 'Julia',
+            'email'    => 'julia@teste.com',
+            'password' => password_hash('abc123', PASSWORD_BCRYPT),
+        ]);
+
+        $this->userRepo->method('findByEmail')->willReturn(null);
+        $this->userRepo->method('create')->willReturn($fakeUser);
+
+        $result = $this->authService->register('Julia', 'julia@teste.com', 'abc123');
+
+        $this->assertArrayHasKey('token', $result);
+        $this->assertNotEmpty($result['token']);
+    }
 }
