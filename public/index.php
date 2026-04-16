@@ -71,7 +71,12 @@ foreach ($routeList as $pattern => [$class, $action]) {
             exit;
         }
 
-        $controller->$action(...array_map('intval', $matches));
+        try {
+            $controller->$action(...array_map('intval', $matches));
+        } catch (\App\Http\HttpException $e) {
+            http_response_code($e->getCode());
+            echo json_encode(['error' => $e->getMessage()]);
+        }
         $matched = true;
         break;
     }

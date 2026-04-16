@@ -102,7 +102,12 @@ abstract class FunctionalTestCase extends DatabaseTestCase
     private function capture(callable $fn): array
     {
         ob_start();
-        $fn();
+        try {
+            $fn();
+        } catch (\App\Http\HttpException $e) {
+            ob_end_clean();
+            return ['error' => $e->getMessage()];
+        }
         $raw = ob_get_clean();
         return json_decode($raw, true) ?? [];
     }

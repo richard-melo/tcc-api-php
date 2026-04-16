@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Middleware;
 
+use App\Http\HttpException;
 use App\Services\AuthService;
 
 class AuthMiddleware
@@ -17,9 +18,7 @@ class AuthMiddleware
         $header = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
         if (!str_starts_with($header, 'Bearer ')) {
-            http_response_code(401);
-            echo json_encode(['error' => 'Token não fornecido.']);
-            exit;
+            throw new HttpException(401, 'Token não fornecido.');
         }
 
         $token = substr($header, 7);
@@ -27,9 +26,7 @@ class AuthMiddleware
         try {
             return $this->authService->validateToken($token);
         } catch (\DomainException $e) {
-            http_response_code(401);
-            echo json_encode(['error' => $e->getMessage()]);
-            exit;
+            throw new HttpException(401, $e->getMessage());
         }
     }
 }
