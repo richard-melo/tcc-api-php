@@ -4,8 +4,9 @@
 
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-CI-2088FF?logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![Jenkins](https://img.shields.io/badge/Jenkins-CI-D24939?logo=jenkins&logoColor=white)](http://76.13.112.86:8080)
 [![PHPUnit](https://img.shields.io/badge/PHPUnit-10.x-366488?logo=php&logoColor=white)](https://phpunit.de/)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level_6-4B5EAA)](https://phpstan.org/)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level_5-4B5EAA)](https://phpstan.org/)
 [![PSR-12](https://img.shields.io/badge/code_style-PSR--12-brightgreen)](https://www.php-fig.org/psr/psr-12/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -18,6 +19,7 @@
 O projeto é o artefato prático do **Trabalho de Conclusão de Curso II** (Engenharia de Software — UNIVILLE), cujo objetivo é comparar empiricamente dois pipelines de integração e entrega contínua equivalentes — um no **GitHub Actions** e outro no **Jenkins** — avaliando critérios como tempo de execução, facilidade de configuração, rastreabilidade e custo operacional.
 
 ### Por que PHP puro?
+
 A decisão de não usar um framework (Laravel, Symfony) foi deliberada: ela garante que o pipeline de CI/CD seja o foco real da avaliação, sem que a complexidade do framework interfira nos resultados. Isso também evidencia o domínio dos fundamentos da linguagem.
 
 ---
@@ -31,7 +33,7 @@ A decisão de não usar um framework (Laravel, Symfony) foi deliberada: ela gara
 | **Autenticação** | JWT HS256 (`firebase/php-jwt`) + bcrypt para senhas |
 | **Segurança** | Prepared statements em todas as queries (SQL injection prevention) |
 | **Testes** | 3 níveis: Unit, Integração e Funcional |
-| **Qualidade** | PHPStan level 6 (análise estática) + PHPCodeSniffer PSR-12 |
+| **Qualidade** | PHPStan level 5 (análise estática) + PHPCodeSniffer PSR-12 |
 | **CI/CD** | Dois pipelines completos e equivalentes para comparação direta |
 
 ---
@@ -63,13 +65,11 @@ HTTP Request
               ▼
 ┌─────────────────────────────────────┐
 │            Services                 │  ← Regras de negócio
-│  AuthService │ ExpenseService │ ... │
 └─────────────┬───────────────────────┘
               │
               ▼
 ┌─────────────────────────────────────┐
 │          Repositories               │  ← Acesso a dados (PDO)
-│  UserRepo │ ExpenseRepo │ ...       │
 └─────────────┬───────────────────────┘
               │
               ▼
@@ -79,6 +79,8 @@ HTTP Request
 ---
 
 ## Endpoints da API
+
+Base URL (produção): `http://76.13.112.86:8000`
 
 ### Autenticação
 
@@ -121,7 +123,7 @@ HTTP Request
 | SQLite | 3.x | Banco de dados embutido |
 | firebase/php-jwt | ^6.10 | Geração e validação de JWT |
 | PHPUnit | ^10.5 | Testes automatizados |
-| PHPStan | ^1.11 | Análise estática (level 6) |
+| PHPStan | ^1.11 | Análise estática (level 5) |
 | PHP_CodeSniffer | ^3.10 | Padrão de código PSR-12 |
 
 ---
@@ -132,14 +134,14 @@ HTTP Request
 
 ```bash
 # Clonar o repositório
-git clone https://github.com/seu-usuario/tcc-api-php.git
-cd tcc-api-php/api
+git clone https://github.com/richard-melo/tcc-api-php.git
+cd tcc-api-php
 
 # Instalar dependências
 composer install
 
 # Executar todos os testes
-APP_ENV=testing DB_PATH=:memory: JWT_SECRET=secret composer test
+composer test
 
 # Apenas testes unitários
 composer test:unit
@@ -157,7 +159,7 @@ composer stan
 composer cs
 
 # Subir servidor de desenvolvimento
-php -S localhost:8080 -t public/
+php -S localhost:8000 -t public/
 ```
 
 ---
@@ -168,57 +170,67 @@ Este projeto implementa **dois pipelines equivalentes** para fins de comparaçã
 
 ### GitHub Actions (`.github/workflows/ci.yml`)
 
-Pipeline declarativo baseado em YAML, executado na infraestrutura gerenciada do GitHub:
+Pipeline declarativo baseado em YAML, executado na infraestrutura gerenciada do GitHub (gratuita para repositórios públicos):
 
-1. **Setup** — checkout + configuração do PHP 8.1 com extensões necessárias
-2. **Cache** — restauração do cache do Composer para builds mais rápidos
-3. **Dependências** — `composer install --no-interaction`
-4. **Testes** — execução do PHPUnit com geração de relatório de cobertura
-5. **Análise Estática** — PHPStan level 6
-6. **Padrão de Código** — PHP_CodeSniffer PSR-12
+1. **Checkout** — `actions/checkout@v4`
+2. **Setup PHP 8.1** — extensões sqlite3, pdo_sqlite, mbstring, pcov via `shivammathur/setup-php@v2`
+3. **Dependências** — `composer install --no-interaction --prefer-dist --no-progress`
+4. **Análise Estática** — PHPStan level 5
+5. **Padrão de Código** — PHP_CodeSniffer PSR-12
+6. **Testes** — PHPUnit com cobertura (clover + texto)
+7. **Artefatos** — upload de `coverage.xml` e `junit.xml` (retidos 30 dias)
 
 ### Jenkins (`Jenkinsfile`)
 
-Pipeline imperativo baseado em Groovy (Jenkinsfile declarativo), executado em servidor próprio:
+Pipeline declarativo em Groovy, executado em servidor próprio via Docker na VPS:
 
-1. **Checkout** — clone do repositório via SCM
-2. **Install** — `composer install`
-3. **Test** — PHPUnit com saída JUnit para integração nativa com Jenkins
-4. **Static Analysis** — PHPStan
-5. **Code Style** — PHPCS
-6. **Relatório** — publicação automática dos resultados no painel Jenkins
+1. **Checkout** — clone via SCM
+2. **Setup** — verificação de PHP, extensões e Composer
+3. **Dependências** — `composer install --no-interaction --prefer-dist --no-progress`
+4. **Análise Estática** — PHPStan level 5
+5. **Padrão de Código** — PHP_CodeSniffer PSR-12
+6. **Testes** — PHPUnit com cobertura
+7. **Relatório** — `archiveArtifacts` + publicação JUnit no painel Jenkins
 
-> **Objetivo da comparação:** ambos os pipelines executam as mesmas etapas de validação. A pesquisa mede e compara tempo de build, facilidade de configuração, rastreabilidade dos resultados, curva de aprendizado e custo operacional entre as duas plataformas.
+> Ambos os pipelines executam exatamente as mesmas etapas. A pesquisa mede e compara tempo de build, facilidade de configuração, rastreabilidade dos resultados e custo operacional entre as duas plataformas.
 
 ---
 
 ## Estrutura de Diretórios
 
 ```
-api/
+.
 ├── .github/
 │   └── workflows/
 │       └── ci.yml              # Pipeline GitHub Actions
 ├── config/
-│   └── database.php            # Configuração do banco SQLite
+│   ├── app.php
+│   ├── database.php            # Config SQLite (fora do autoload)
+│   └── routes.php              # Mapa de rotas
+├── docs/
+│   ├── setup-vps.md            # Guia de setup da VPS
+│   └── tcc-contexto.md         # Contexto completo do TCC
 ├── public/
 │   └── index.php               # Entry point da aplicação
 ├── src/
-│   ├── controllers/            # Camada HTTP (request/response)
+│   ├── Config/
+│   │   └── Database.php        # Conexão PDO + migrations
+│   ├── Controllers/            # Camada HTTP (request/response)
 │   │   ├── AuthController.php
 │   │   ├── ExpenseController.php
 │   │   ├── ReportController.php
 │   │   └── UserController.php
-│   ├── Http/                   # Router e Response helpers
-│   ├── middleware/             # JWT Auth, CORS
-│   ├── models/                 # Entidades do domínio
-│   ├── repositories/           # Acesso a dados (PDO/SQLite)
-│   └── services/               # Regras de negócio
+│   ├── Http/                   # Request helper
+│   ├── Middleware/             # JWT Auth, CORS
+│   ├── Models/                 # Entidades do domínio
+│   ├── Repositories/           # Acesso a dados (PDO/SQLite)
+│   └── Services/               # Regras de negócio
 ├── tests/
 │   ├── Unit/                   # Testes de unidade isolados
 │   ├── Integration/            # Testes com banco real (in-memory)
 │   ├── Functional/             # Testes end-to-end da API
 │   └── Support/                # Helpers e fixtures de teste
+├── ecosystem.config.js         # Configuração PM2 (deploy)
 ├── Jenkinsfile                 # Pipeline Jenkins
 ├── composer.json
 ├── phpcs.xml                   # Regras PSR-12
