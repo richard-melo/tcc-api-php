@@ -68,4 +68,54 @@ class ExpenseTest extends TestCase
 
         $this->assertSame($expected, Expense::PAYMENT_METHODS);
     }
+
+    public function testFromArrayWithNullNotes(): void
+    {
+        $expense = Expense::fromArray([
+            'id'             => 1,
+            'user_id'        => 1,
+            'description'    => 'Farmácia',
+            'amount'         => 45.00,
+            'category'       => 'saude',
+            'payment_method' => 'debito',
+            'expense_date'   => '2025-06-01',
+            'notes'          => null,
+        ]);
+
+        $this->assertNull($expense->notes);
+    }
+
+    public function testFromArrayMapsTimestamps(): void
+    {
+        $expense = Expense::fromArray([
+            'id'             => 1,
+            'user_id'        => 1,
+            'description'    => 'Livro',
+            'amount'         => 59.90,
+            'category'       => 'educacao',
+            'payment_method' => 'credito',
+            'expense_date'   => '2025-06-05',
+            'created_at'     => '2025-06-05 09:00:00',
+            'updated_at'     => '2025-06-05 09:00:00',
+        ]);
+
+        $this->assertSame('2025-06-05 09:00:00', $expense->createdAt);
+        $this->assertSame('2025-06-05 09:00:00', $expense->updatedAt);
+    }
+
+    public function testAmountIsCastToFloat(): void
+    {
+        $expense = Expense::fromArray([
+            'id'             => 1,
+            'user_id'        => 1,
+            'description'    => 'Gasolina',
+            'amount'         => '120',
+            'category'       => 'transporte',
+            'payment_method' => 'dinheiro',
+            'expense_date'   => '2025-06-10',
+        ]);
+
+        $this->assertIsFloat($expense->amount);
+        $this->assertSame(120.0, $expense->amount);
+    }
 }
