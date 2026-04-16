@@ -81,4 +81,21 @@ class UserRepositoryTest extends DatabaseTestCase
 
         $this->repo->create('Outro', 'richard@teste.com', 'hashed');
     }
+
+    public function testCreateReturnsUserWithIntegerId(): void
+    {
+        $user = $this->repo->create('Ana', 'ana@teste.com', 'hashed');
+
+        $this->assertIsInt($user->id);
+        $this->assertGreaterThan(0, $user->id);
+    }
+
+    public function testUpdateSetsUpdatedAt(): void
+    {
+        $user    = $this->repo->create('Carlos', 'carlos@teste.com', 'hashed');
+        $updated = $this->repo->update($user->id, ['name' => 'Carlos Novo']);
+
+        $this->assertNotEmpty($updated->updatedAt);
+        $this->assertSame('Carlos Novo', $updated->name);
+    }
 }
