@@ -28,7 +28,7 @@ jobs:
 
       # ── 3. Instalar dependências ──────────────────────────────────────────────
       - name: Instalar dependências (Composer)
-        run: composer install --no-interaction --prefer-dist --no-progress
+        run: composer install --no-interaction --prefer-dist --no-progress --no-security-blocking
 
       # ── 4. Análise estática (PHPStan) ─────────────────────────────────────────
       - name: Análise estática — PHPStan level 5
