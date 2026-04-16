@@ -9,7 +9,9 @@ use PDO;
 
 class ExpenseRepository
 {
-    public function __construct(private readonly PDO $db) {}
+    public function __construct(private readonly PDO $db)
+    {
+    }
 
     public function findById(int $id, int $userId): ?Expense
     {

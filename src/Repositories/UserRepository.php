@@ -9,7 +9,9 @@ use PDO;
 
 class UserRepository
 {
-    public function __construct(private readonly PDO $db) {}
+    public function __construct(private readonly PDO $db)
+    {
+    }
 
     public function findById(int $id): ?User
     {

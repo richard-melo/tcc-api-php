@@ -12,7 +12,7 @@ use Firebase\JWT\Key;
 class AuthService
 {
     private string $jwtSecret;
-    private int    $jwtTtl;
+    private int $jwtTtl;
 
     public function __construct(private readonly UserRepository $userRepository)
     {

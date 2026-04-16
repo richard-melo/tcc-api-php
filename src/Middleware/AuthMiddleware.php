@@ -8,7 +8,9 @@ use App\Services\AuthService;
 
 class AuthMiddleware
 {
-    public function __construct(private readonly AuthService $authService) {}
+    public function __construct(private readonly AuthService $authService)
+    {
+    }
 
     public function handle(): array
     {

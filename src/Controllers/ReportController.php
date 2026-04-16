@@ -10,9 +10,10 @@ use App\Repositories\ExpenseRepository;
 class ReportController
 {
     public function __construct(
-        private readonly AuthMiddleware    $auth,
+        private readonly AuthMiddleware $auth,
         private readonly ExpenseRepository $expenseRepository,
-    ) {}
+    ) {
+    }
 
     public function summary(): void
     {
@@ -21,8 +22,10 @@ class ReportController
         $startDate = $_GET['start_date'] ?? date('Y-m-01');       // primeiro dia do mês atual
         $endDate   = $_GET['end_date']   ?? date('Y-m-t');         // último dia do mês atual
 
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) ||
-            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)) {
+        if (
+            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $startDate) ||
+            !preg_match('/^\d{4}-\d{2}-\d{2}$/', $endDate)
+        ) {
             $this->respond(['error' => 'Datas devem estar no formato YYYY-MM-DD.'], 422);
             return;
         }

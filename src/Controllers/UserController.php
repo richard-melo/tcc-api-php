@@ -13,7 +13,8 @@ class UserController
     public function __construct(
         private readonly AuthMiddleware $auth,
         private readonly UserRepository $userRepository,
-    ) {}
+    ) {
+    }
 
     public function me(): void
     {

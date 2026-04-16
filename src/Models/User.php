@@ -13,7 +13,8 @@ class User
         public readonly string $password,
         public readonly string $createdAt = '',
         public readonly string $updatedAt = '',
-    ) {}
+    ) {
+    }
 
     public static function fromArray(array $data): self
     {

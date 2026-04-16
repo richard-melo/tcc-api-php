@@ -12,9 +12,10 @@ use App\Repositories\ExpenseRepository;
 class ExpenseController
 {
     public function __construct(
-        private readonly AuthMiddleware    $auth,
+        private readonly AuthMiddleware $auth,
         private readonly ExpenseRepository $expenseRepository,
-    ) {}
+    ) {
+    }
 
     public function index(): void
     {
