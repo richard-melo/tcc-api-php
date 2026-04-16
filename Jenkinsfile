@@ -54,21 +54,17 @@ pipeline {
             }
         }
 
-        // ── 6. Testes automatizados com cobertura ─────────────────────────────
+        // ── 6. Testes automatizados ───────────────────────────────────────────
         stage('Testes automatizados — PHPUnit') {
             steps {
-                sh '''
-                    vendor/bin/phpunit \
-                        --coverage-clover=coverage.xml \
-                        --coverage-text
-                '''
+                sh 'vendor/bin/phpunit --no-coverage'
             }
         }
 
-        // ── 7. Armazenar artefato de cobertura ────────────────────────────────
+        // ── 7. Armazenar artefato de resultados ───────────────────────────────
         stage('Publicar relatório de cobertura') {
             steps {
-                archiveArtifacts artifacts: 'coverage.xml, junit.xml', fingerprint: true
+                archiveArtifacts artifacts: 'junit.xml', fingerprint: true
             }
         }
 
