@@ -179,6 +179,34 @@ class ExpenseTest extends FunctionalTestCase
         $this->assertArrayHasKey('error', $response);
     }
 
+    public function testCreateExpenseWithNotesStoresNote(): void
+    {
+        $response = $this->callExpense('store', $this->validPayload(['notes' => 'nota do almoço']));
+
+        $this->assertArrayHasKey('notes', $response);
+        $this->assertSame('nota do almoço', $response['notes']);
+    }
+
+    public function testCreateExpenseWithZeroAmountFails(): void
+    {
+        $response = $this->callExpense('store', $this->validPayload(['amount' => 0]));
+
+        $this->assertArrayHasKey('error', $response);
+    }
+
+    public function testCreatedExpenseHasCorrectFields(): void
+    {
+        $response = $this->callExpense('store', $this->validPayload());
+
+        $this->assertArrayHasKey('id', $response);
+        $this->assertArrayHasKey('description', $response);
+        $this->assertArrayHasKey('amount', $response);
+        $this->assertArrayHasKey('category', $response);
+        $this->assertArrayHasKey('payment_method', $response);
+        $this->assertArrayHasKey('expense_date', $response);
+        $this->assertArrayHasKey('created_at', $response);
+    }
+
     // ── Isolamento entre usuários ────────────────────────────────────────────
 
     public function testUserCannotSeeAnotherUsersExpenses(): void

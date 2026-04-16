@@ -140,4 +140,35 @@ class ReportTest extends FunctionalTestCase
         $this->assertArrayHasKey('period', $response);
         $this->assertArrayHasKey('total_amount', $response);
     }
+
+    public function testSummaryMinMaxAmountsAreCorrect(): void
+    {
+        $response   = $this->callReport('summary', [
+            'start_date' => '2025-06-01',
+            'end_date'   => '2025-06-30',
+        ]);
+        $byCategory = $response['by_category'];
+
+        // alimentacao: 150 e 80
+        $alimentacao = array_values(array_filter($byCategory, fn($c) => $c['category'] === 'alimentacao'))[0];
+
+        $this->assertEqualsWithDelta(80.00,  $alimentacao['min_amount'], 0.01);
+        $this->assertEqualsWithDelta(150.00, $alimentacao['max_amount'], 0.01);
+    }
+
+    public function testSummaryOnlyIncludesCurrentUserData(): void
+    {
+        // Usuário isolado sem nenhum gasto no período
+        $otherToken = $this->registerAndLogin('Outro', 'outro@teste.com', 'senha456');
+        $this->withAuth($otherToken);
+
+        $response = $this->callReport('summary', [
+            'start_date' => '2025-06-01',
+            'end_date'   => '2025-06-30',
+        ]);
+
+        // Este usuário não tem gastos em junho — deve retornar zero
+        $this->assertEqualsWithDelta(0.0, $response['total_amount'], 0.01);
+        $this->assertSame(0, $response['total_expenses']);
+    }
 }
