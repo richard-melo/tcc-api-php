@@ -1,2 +1,4 @@
 run_number,scenario,total_time_seconds,composer_time,phpstan_time,phpcs_time,phpunit_time,coverage_percent,tests_total,tests_passed,tests_failed,status
 20,baseline,23,N/A,N/A,N/A,N/A,N/A,89,89,0,success
+22,clean-build-expanded,22,N/A,N/A,N/A,N/A,N/A,209,209,0,success
+24,clean-build-expanded,27,2,5,1,18,91.65,209,209,0,success
