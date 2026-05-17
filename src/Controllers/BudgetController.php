@@ -13,7 +13,7 @@ class BudgetController
 {
     public function __construct(
         private readonly AuthMiddleware $auth,
-        private readonly BudgetService  $budgetService,
+        private readonly BudgetService $budgetService,
     ) {
     }
 
@@ -68,7 +68,8 @@ class BudgetController
             return;
         }
         if ((float) $body['amount'] > ExpenseValidator::MAX_AMOUNT) {
-            $this->respond(['error' => 'O campo amount não pode exceder ' . number_format(ExpenseValidator::MAX_AMOUNT, 2, '.', '') . '.'], 422);
+            $max = number_format(ExpenseValidator::MAX_AMOUNT, 2, '.', '');
+            $this->respond(['error' => "O campo amount não pode exceder {$max}."], 422);
             return;
         }
 

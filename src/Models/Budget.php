@@ -7,12 +7,12 @@ namespace App\Models;
 class Budget
 {
     public function __construct(
-        public readonly ?int   $id,
-        public readonly int    $userId,
+        public readonly ?int $id,
+        public readonly int $userId,
         public readonly string $category,
-        public readonly float  $amount,
-        public readonly int    $month,
-        public readonly int    $year,
+        public readonly float $amount,
+        public readonly int $month,
+        public readonly int $year,
         public readonly string $createdAt = '',
         public readonly string $updatedAt = '',
     ) {

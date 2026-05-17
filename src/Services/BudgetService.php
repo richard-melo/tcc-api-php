@@ -21,11 +21,11 @@ class BudgetService
     }
 
     public function createOrUpdate(
-        int    $userId,
+        int $userId,
         string $category,
-        float  $amount,
-        int    $month,
-        int    $year,
+        float $amount,
+        int $month,
+        int $year,
     ): Budget {
         $existing = $this->budgetRepository->findByCategory($userId, $category, $month, $year);
 
