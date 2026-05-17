@@ -6,14 +6,19 @@ namespace Tests\Support;
 
 use App\Config\Database;
 use App\Controllers\AuthController;
+use App\Controllers\BudgetController;
+use App\Controllers\ExportController;
 use App\Controllers\ExpenseController;
 use App\Controllers\ReportController;
 use App\Controllers\UserController;
 use App\Http\Request;
 use App\Middleware\AuthMiddleware;
+use App\Repositories\BudgetRepository;
 use App\Repositories\ExpenseRepository;
 use App\Repositories\UserRepository;
 use App\Services\AuthService;
+use App\Services\BudgetService;
+use App\Services\ExportService;
 
 /**
  * Base para testes funcionais: simula ciclo completo request → controller → response
@@ -28,7 +33,10 @@ abstract class FunctionalTestCase extends DatabaseTestCase
 {
     protected UserRepository    $userRepo;
     protected ExpenseRepository $expenseRepo;
+    protected BudgetRepository  $budgetRepo;
     protected AuthService       $authService;
+    protected BudgetService     $budgetService;
+    protected ExportService     $exportService;
     protected AuthMiddleware    $authMiddleware;
 
     protected function setUp(): void
@@ -38,7 +46,10 @@ abstract class FunctionalTestCase extends DatabaseTestCase
         $db                   = Database::getConnection();
         $this->userRepo       = new UserRepository($db);
         $this->expenseRepo    = new ExpenseRepository($db);
+        $this->budgetRepo     = new BudgetRepository($db);
         $this->authService    = new AuthService($this->userRepo);
+        $this->budgetService  = new BudgetService($this->budgetRepo);
+        $this->exportService  = new ExportService($this->expenseRepo);
         $this->authMiddleware = new AuthMiddleware($this->authService);
     }
 
@@ -50,7 +61,7 @@ abstract class FunctionalTestCase extends DatabaseTestCase
         parent::tearDown();
     }
 
-    // ── Helpers para autenticação ──────────────────────────────────────────
+    // ── Helpers de autenticação ────────────────────────────────────────────────
 
     protected function registerAndLogin(
         string $name     = 'Richard',
@@ -66,7 +77,7 @@ abstract class FunctionalTestCase extends DatabaseTestCase
         $_SERVER['HTTP_AUTHORIZATION'] = "Bearer {$token}";
     }
 
-    // ── Dispatcher de controllers ──────────────────────────────────────────
+    // ── Dispatchers de controllers ─────────────────────────────────────────────
 
     protected function callAuth(string $action, array $body = []): array
     {
@@ -97,7 +108,22 @@ abstract class FunctionalTestCase extends DatabaseTestCase
         return $this->capture(fn() => $ctrl->$action());
     }
 
-    // ── Captura de output ──────────────────────────────────────────────────
+    protected function callBudget(string $action, array $body = [], ?int $id = null, array $query = []): array
+    {
+        Request::$stub = $body;
+        $_GET          = $query;
+        $ctrl          = new BudgetController($this->authMiddleware, $this->budgetService);
+        return $this->capture(fn() => $id !== null ? $ctrl->$action($id) : $ctrl->$action());
+    }
+
+    protected function callExport(string $action, array $query = []): array|string
+    {
+        $_GET = $query;
+        $ctrl = new ExportController($this->authMiddleware, $this->exportService);
+        return $this->captureRaw(fn() => $ctrl->$action());
+    }
+
+    // ── Captura de output ──────────────────────────────────────────────────────
 
     private function capture(callable $fn): array
     {
@@ -110,5 +136,17 @@ abstract class FunctionalTestCase extends DatabaseTestCase
         }
         $raw = ob_get_clean();
         return json_decode($raw, true) ?? [];
+    }
+
+    private function captureRaw(callable $fn): array|string
+    {
+        ob_start();
+        try {
+            $fn();
+        } catch (\App\Http\HttpException $e) {
+            ob_end_clean();
+            return ['error' => $e->getMessage()];
+        }
+        return ob_get_clean();
     }
 }

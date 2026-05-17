@@ -76,5 +76,24 @@ class Database
             CREATE INDEX IF NOT EXISTS idx_expenses_category ON expenses(category);
             CREATE INDEX IF NOT EXISTS idx_expenses_expense_date ON expenses(expense_date);
         ");
+
+        $pdo->exec("
+            CREATE TABLE IF NOT EXISTS budgets (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id    INTEGER NOT NULL,
+                category   TEXT    NOT NULL,
+                amount     REAL    NOT NULL,
+                month      INTEGER NOT NULL,
+                year       INTEGER NOT NULL,
+                created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT    NOT NULL DEFAULT (datetime('now')),
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+                UNIQUE (user_id, category, month, year)
+            )
+        ");
+
+        $pdo->exec("
+            CREATE INDEX IF NOT EXISTS idx_budgets_user_month_year ON budgets(user_id, month, year);
+        ");
     }
 }
