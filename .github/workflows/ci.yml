@@ -49,6 +49,20 @@ jobs:
           DB_PATH: ":memory:"
           JWT_SECRET: github-actions-ci-secret
 
+      # ── 6b. Registrar cobertura no log ────────────────────────────────────────
+      - name: Registrar cobertura
+        if: always()
+        run: |
+          if [ -f coverage.xml ]; then
+            php -r "
+              \$xml = simplexml_load_file('coverage.xml');
+              \$m   = \$xml->project->metrics;
+              \$s   = (int)\$m['statements'];
+              \$c   = (int)\$m['coveredstatements'];
+              echo 'COVERAGE_PERCENT: ' . (\$s > 0 ? round(\$c / \$s * 100, 2) : 0) . PHP_EOL;
+            "
+          fi
+
       # ── 7. Armazenar artefato de cobertura ────────────────────────────────────
       - name: Publicar relatório de cobertura
         if: always()
