@@ -53,6 +53,9 @@ log_ok "Jenkins configurado → $BRANCH"
 for run_idx in $(seq "$START_FROM" "$REPEAT"); do
     log_h "Run $run_idx / $REPEAT — $SCENARIO"
 
+    # Diretório temporário exigido por gha_collect/jenkins_collect para arquivos intermediários
+    WORK_DIR=$(mktemp -d)
+
     # ── Commit vazio → dispara GHA ─────────────────────────────────────────────
     cd "$REPO_DIR"
     git commit --allow-empty -m "[metrics] $SCENARIO repeticao $run_idx/$REPEAT"
@@ -71,6 +74,8 @@ for run_idx in $(seq "$START_FROM" "$REPEAT"); do
     jenkins_trigger
     jenkins_wait "$JENKINS_BUILD_NUMBER"
     jenkins_collect "$JENKINS_BUILD_NUMBER"
+
+    rm -rf "$WORK_DIR"
 
     # ── Grava linhas diretamente no CSV (dados preservados mesmo se o script falhar)
     GHA_NOTE="repeticao_${run_idx}_de_${REPEAT};cobertura_derivada_jenkins"
