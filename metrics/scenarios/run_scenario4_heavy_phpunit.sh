@@ -67,7 +67,7 @@ class HeavyMathTest extends FunctionalTestCase
 
             $a2 = round($i * 1.5, 2);
             $b2 = round($i * 0.75, 2);
-            $cases["caso_{$i}_decimais"] = [$a2, $b2, $a2 + $b2, $a2 - $b2, round($a2 * $b2, 2)];
+            $cases["caso_{$i}_decimais"] = [$a2, $b2, $a2 + $b2, $a2 - $b2, $a2 * $b2];
         }
         return $cases;
     }
