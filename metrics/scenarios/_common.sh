@@ -8,6 +8,7 @@ set -euo pipefail
 JENKINS_URL="${JENKINS_URL:-http://76.13.112.86:8080}"
 JENKINS_USER="${JENKINS_USER:-richard}"
 JENKINS_TOKEN="${JENKINS_TOKEN:-richard77}"
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"
 JOB_NAME="tcc-api-php"
 REPO="richard-melo/tcc-api-php"
 
@@ -29,6 +30,16 @@ log_h()   { echo; echo "══════════════════�
 log()     { echo "  [$(date +%H:%M:%S)] $*"; }
 log_ok()  { echo "  ✔ $*"; }
 log_err() { echo "  ✘ $*" >&2; }
+
+# ── GitHub API: wrapper com autenticação opcional ─────────────────────────────
+# Exportar GITHUB_TOKEN evita o rate limit de 60 req/h (sem token → 5000 req/h)
+_gha_curl() {
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        curl -sf -H "Authorization: Bearer $GITHUB_TOKEN" "$@"
+    else
+        curl -sf "$@"
+    fi
+}
 
 # ── Jenkins: chamadas HTTP ─────────────────────────────────────────────────────
 _j_get() {
@@ -217,7 +228,7 @@ gha_wait_for_run() {
     log "Aguardando run no GitHub Actions para SHA $sha..."
     for i in $(seq 1 40); do
         local runs
-        runs=$(curl -sf -H "Accept: application/vnd.github+json" \
+        runs=$(_gha_curl -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$REPO/actions/runs?head_sha=$sha&per_page=1" 2>/dev/null || echo '{}')
         GHA_RUN_ID=$(python3 -c "
 import json,sys
@@ -241,7 +252,7 @@ gha_wait_complete() {
     log "Aguardando conclusão do run #$run_id..."
     while true; do
         local data status conclusion
-        data=$(curl -sf -H "Accept: application/vnd.github+json" \
+        data=$(_gha_curl -H "Accept: application/vnd.github+json" \
             "https://api.github.com/repos/$REPO/actions/runs/$run_id" 2>/dev/null || echo '{}')
         status=$(python3 -c "import json,sys; print(json.load(sys.stdin)['status'])" <<< "$data" 2>/dev/null || echo "unknown")
         conclusion=$(python3 -c "import json,sys; print(json.load(sys.stdin).get('conclusion','null'))" <<< "$data" 2>/dev/null || echo "null")
@@ -259,13 +270,13 @@ gha_collect() {
 
     # Run metadata (total time, status)
     local run_data
-    run_data=$(curl -sf -H "Accept: application/vnd.github+json" \
+    run_data=$(_gha_curl -H "Accept: application/vnd.github+json" \
         "https://api.github.com/repos/$REPO/actions/runs/$run_id" 2>/dev/null || echo '{}')
     G_STATUS=$(python3 -c "import json,sys; print(json.load(sys.stdin).get('conclusion','unknown'))" <<< "$run_data" 2>/dev/null || echo "unknown")
 
     # Step times from jobs API (public, no auth needed)
     local jobs_data
-    jobs_data=$(curl -sf -H "Accept: application/vnd.github+json" \
+    jobs_data=$(_gha_curl -H "Accept: application/vnd.github+json" \
         "https://api.github.com/repos/$REPO/actions/runs/$run_id/jobs" 2>/dev/null || echo '{}')
 
     JOBS_JSON="$jobs_data" python3 - "$wdir/g_times.txt" << 'PY'
