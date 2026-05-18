@@ -9,3 +9,4 @@ run_number,scenario,total_time_seconds,composer_time,phpstan_time,phpcs_time,php
 35,heavy-phpunit,30,3,4,0,10,N/A,N/A,N/A,N/A,failure
 38,heavy-phpunit,27,2,4,0,11,N/A,N/A,N/A,N/A,success
 41,full-heavy,40,3,5,1,10,N/A,N/A,N/A,N/A,success
+43,intentional-failures,15,2,4,0,0,N/A,N/A,N/A,N/A,failure
