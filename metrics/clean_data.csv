@@ -1,0 +1,15 @@
+scenario,tool,run_number,total_time,composer_time,phpstan_time,phpcs_time,phpunit_time,coverage_percent,tests_total,tests_passed,tests_failed,status,notes
+clean-build-expanded,github_actions,22,22,3,3,0,5,91.65,209,209,0,success,phpcs<1s_arredondado;cobertura_testes_derivados_jenkins_mesmo_codigo
+clean-build-expanded,jenkins,24,27,2,5,1,18,91.65,209,209,0,success,baseline_completo_com_medicao_de_stages
+heavy-composer,github_actions,27,26,3,3,0,6,91.65,209,209,0,success,phpcs<1s_arredondado;cobertura_testes_derivados_jenkins_mesmo_codigo
+heavy-composer,jenkins,30,28,2,5,1,18,91.65,209,209,0,success,4_dependencias_pesadas_lock_removido
+heavy-phpstan,github_actions,29,25,4,5,0,5,66.63,209,209,0,success,phpcs<1s_arredondado;cobertura_testes_derivados_jenkins_mesmo_codigo
+heavy-phpstan,jenkins,31,29,2,6,1,18,66.63,209,209,0,success,6_classes_servico_sem_cobertura_de_testes
+heavy-phpcs,github_actions,30,25,3,5,0,6,72.65,209,209,0,success,phpcs<1s_arredondado;cobertura_testes_derivados_jenkins_mesmo_codigo
+heavy-phpcs,jenkins,32,26,2,3,1,18,72.65,209,209,0,success,13_arquivos_adicionais_sem_cobertura
+heavy-phpunit,github_actions,38,27,2,4,0,11,92.13,439,439,0,success,phpcs<1s_arredondado;cobertura_testes_derivados_jenkins_mesmo_codigo
+heavy-phpunit,jenkins,35,33,2,1,1,27,92.13,439,439,0,success,180_casos_adicionais_com_usleep_e_io_real
+full-heavy,github_actions,41,40,3,5,1,10,56.27,439,439,0,success,cobertura_testes_derivados_jenkins_mesmo_codigo
+full-heavy,jenkins,36,39,2,7,1,27,56.27,439,439,0,success,combinacao_c1_c2_c3_c4_todos_stages_estressados
+intentional-failures,github_actions,43,15,2,4,0,0,N/A,N/A,N/A,N/A,failure,phpstan_falhou;phpcs_phpunit_nao_executaram;phpcs_0_indica_nao_execucao
+intentional-failures,jenkins,37,8,1,N/A,N/A,N/A,N/A,N/A,N/A,N/A,failure,phpstan_falhou_em_2s;stages_posteriores_nao_rodaram
