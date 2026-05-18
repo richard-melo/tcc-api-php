@@ -326,6 +326,4 @@ commit_push "scenario(heavy-phpunit): adiciona 180 casos de teste (math+string+A
 
 collect_all "$SCENARIO"
 
-cd "$REPO_DIR"
-git checkout main
-log_ok "De volta para main. Branch '$BRANCH' mantida no GitHub."
+commit_metrics_to_main "$SCENARIO" "$GHA_NEW_LINE" "$JENKINS_NEW_LINE"

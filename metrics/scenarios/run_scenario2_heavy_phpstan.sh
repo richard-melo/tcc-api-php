@@ -671,6 +671,4 @@ commit_push "scenario(heavy-phpstan): adiciona 6 classes de serviço com tipagem
 # ── 4. Coleta métricas ─────────────────────────────────────────────────────────
 collect_all "$SCENARIO"
 
-cd "$REPO_DIR"
-git checkout main
-log_ok "De volta para main. Branch '$BRANCH' mantida no GitHub."
+commit_metrics_to_main "$SCENARIO" "$GHA_NEW_LINE" "$JENKINS_NEW_LINE"

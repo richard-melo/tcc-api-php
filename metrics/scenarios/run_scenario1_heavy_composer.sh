@@ -53,7 +53,5 @@ commit_push "scenario(heavy-composer): adiciona monolog, symfony/validator, guzz
 # ── 4. Coleta métricas ─────────────────────────────────────────────────────────
 collect_all "$SCENARIO"
 
-# ── 5. Volta para main ─────────────────────────────────────────────────────────
-cd "$REPO_DIR"
-git checkout main
-log_ok "De volta para main. Branch '$BRANCH' mantida no GitHub."
+# ── 5. Salva métricas e volta para main ───────────────────────────────────────
+commit_metrics_to_main "$SCENARIO" "$GHA_NEW_LINE" "$JENKINS_NEW_LINE"

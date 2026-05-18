@@ -3,3 +3,5 @@ run_number,scenario,total_time_seconds,composer_time,phpstan_time,phpcs_time,php
 22,clean-build-expanded,22,3,3,0,5,91.65,209,209,0,success
 25,heavy-composer,12,1,0,0,0,N/A,N/A,N/A,N/A,failure
 27,heavy-composer,26,3,3,0,6,N/A,N/A,N/A,N/A,success
+29,heavy-phpstan,25,4,5,0,5,N/A,N/A,N/A,N/A,success
+30,heavy-phpcs,25,3,5,0,6,N/A,N/A,N/A,N/A,success

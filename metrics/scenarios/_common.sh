@@ -21,6 +21,8 @@ CSV_HEADER="run_number,scenario,total_time_seconds,composer_time,phpstan_time,ph
 WORK_DIR=""
 JENKINS_ORIGINAL_CONFIG=""
 PUSHED_SHA=""
+GHA_NEW_LINE=""
+JENKINS_NEW_LINE=""
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 log_h()   { echo; echo "══════════════════════════════════════════════════════"; echo "  $*"; echo "══════════════════════════════════════════════════════"; }
@@ -324,22 +326,36 @@ commit_push() {
 # ── CSV ────────────────────────────────────────────────────────────────────────
 save_gha_csv() {
     local scenario="$1"
-    mkdir -p "$METRICS_DIR"
-    [[ ! -f "$GHA_CSV" ]] && echo "$CSV_HEADER" > "$GHA_CSV"
-    local line="$GHA_RUN_NUMBER,$scenario,$G_TOTAL,$G_COMPOSER,$G_PHPSTAN,$G_PHPCS,$G_PHPUNIT,N/A,N/A,N/A,N/A,$G_STATUS"
-    echo "$line" >> "$GHA_CSV"
-    log_ok "GHA → $GHA_CSV"
-    echo "  $line"
+    GHA_NEW_LINE="$GHA_RUN_NUMBER,$scenario,$G_TOTAL,$G_COMPOSER,$G_PHPSTAN,$G_PHPCS,$G_PHPUNIT,N/A,N/A,N/A,N/A,$G_STATUS"
+    log_ok "GHA linha pronta: $GHA_NEW_LINE"
 }
 
 save_jenkins_csv() {
     local scenario="$1"
+    JENKINS_NEW_LINE="$JENKINS_BUILD_NUMBER,$scenario,$J_TOTAL,$J_COMPOSER,$J_PHPSTAN,$J_PHPCS,$J_PHPUNIT,$J_COVERAGE,$J_TESTS_TOTAL,$J_TESTS_PASSED,$J_TESTS_FAILED,$J_STATUS"
+    log_ok "Jenkins linha pronta: $JENKINS_NEW_LINE"
+}
+
+commit_metrics_to_main() {
+    local scenario="$1"
+    local gha_line="$2"
+    local jenkins_line="$3"
+
+    cd "$REPO_DIR"
+    git checkout -f main
+    git pull origin main --ff-only 2>/dev/null || true
+
     mkdir -p "$METRICS_DIR"
+    [[ ! -f "$GHA_CSV" ]] && echo "$CSV_HEADER" > "$GHA_CSV"
+    echo "$gha_line" >> "$GHA_CSV"
+
     [[ ! -f "$JENKINS_CSV" ]] && echo "$CSV_HEADER" > "$JENKINS_CSV"
-    local line="$JENKINS_BUILD_NUMBER,$scenario,$J_TOTAL,$J_COMPOSER,$J_PHPSTAN,$J_PHPCS,$J_PHPUNIT,$J_COVERAGE,$J_TESTS_TOTAL,$J_TESTS_PASSED,$J_TESTS_FAILED,$J_STATUS"
-    echo "$line" >> "$JENKINS_CSV"
-    log_ok "Jenkins → $JENKINS_CSV"
-    echo "  $line"
+    echo "$jenkins_line" >> "$JENKINS_CSV"
+
+    git add "$GHA_CSV" "$JENKINS_CSV"
+    git commit -m "metrics: registra cenário $scenario (GHA #$GHA_RUN_NUMBER / Jenkins #$JENKINS_BUILD_NUMBER)"
+    git push origin main
+    log_ok "Métricas commitadas na main. Branch '$scenario' mantida no GitHub."
 }
 
 # ── Orquestração principal ────────────────────────────────────────────────────
