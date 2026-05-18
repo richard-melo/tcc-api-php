@@ -263,10 +263,11 @@ class HeavyFlowTest extends FunctionalTestCase
 
         // 3. Cria despesa via controller
         $created = $this->callExpense('store', [
-            'description' => $description,
-            'amount'      => $amount,
-            'category'    => $category,
-            'date'        => date('Y-m-d'),
+            'description'    => $description,
+            'amount'         => $amount,
+            'category'       => $category,
+            'payment_method' => 'pix',
+            'expense_date'   => date('Y-m-d'),
         ]);
         $expenseId = $created['id'] ?? 0;
         $this->assertGreaterThan(0, $expenseId, "ID da despesa inválido");
@@ -274,10 +275,11 @@ class HeavyFlowTest extends FunctionalTestCase
 
         // 4. Atualiza despesa via controller
         $updated = $this->callExpense('update', [
-            'description' => $description . ' (atualizado)',
-            'amount'      => $updatedAmount,
-            'category'    => $category,
-            'date'        => date('Y-m-d'),
+            'description'    => $description . ' (atualizado)',
+            'amount'         => $updatedAmount,
+            'category'       => $category,
+            'payment_method' => 'pix',
+            'expense_date'   => date('Y-m-d'),
         ], $expenseId);
         $this->assertEqualsWithDelta($updatedAmount, $updated['amount'] ?? -1.0, 0.01);
 
@@ -303,7 +305,7 @@ class HeavyFlowTest extends FunctionalTestCase
      */
     public static function expenseFlowProvider(): array
     {
-        $categories = ['food', 'transport', 'housing', 'health', 'entertainment'];
+        $categories = ['alimentacao', 'transporte', 'moradia', 'saude', 'lazer'];
         $cases      = [];
 
         for ($i = 1; $i <= 30; $i++) {
