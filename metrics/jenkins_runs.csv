@@ -8,3 +8,4 @@ run_number,scenario,total_time_seconds,composer_time,phpstan_time,phpcs_time,php
 32,heavy-phpcs,26,2,3,1,18,72.65,209,209,0,success
 33,heavy-phpunit,38,2,1,1,N/A,N/A,439,384,55,failure
 34,heavy-phpunit,34,2,1,1,N/A,N/A,439,414,25,failure
+35,heavy-phpunit,33,2,1,1,27,92.13,439,439,0,success
