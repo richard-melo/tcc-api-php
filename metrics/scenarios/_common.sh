@@ -168,7 +168,7 @@ jenkins_collect() {
         local key="$1"
         local ms
         ms=$(grep "STAGE_TIME_${key}:" "$wdir/j_console.log" 2>/dev/null \
-            | grep -oP '\d+' | tail -1 || echo "")
+            | grep -oE '[0-9]+' | tail -1 || echo "")
         if [[ -n "$ms" && "$ms" != "0" ]]; then
             python3 -c "print(round($ms/1000))"
         else
@@ -182,7 +182,7 @@ jenkins_collect() {
     J_PHPUNIT=$(   _j_parse_stage "phpunit")
 
     J_COVERAGE=$(grep "COVERAGE_PERCENT:" "$wdir/j_console.log" 2>/dev/null \
-        | grep -oP '[\d.]+' | tail -1 || echo "N/A")
+        | grep -oE '[0-9]+\.[0-9]+|[0-9]+' | tail -1 || echo "N/A")
     [[ -z "$J_COVERAGE" ]] && J_COVERAGE="N/A"
 
     J_TESTS_TOTAL=$(python3 -c "

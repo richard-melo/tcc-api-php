@@ -30,7 +30,7 @@ with open(path) as f:
 
 data.setdefault('require', {}).update({
     'monolog/monolog':     '^3.0',
-    'symfony/validator':   '^7.0',
+    'symfony/validator':   '^6.4',
     'guzzlehttp/guzzle':   '^7.0',
     'ramsey/uuid':         '^4.0',
 })
