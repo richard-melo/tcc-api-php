@@ -23,3 +23,13 @@ clean-build-expanded,github_actions,50,24,3,4,0,6,91.65,209,209,0,success,repeti
 clean-build-expanded,jenkins,44,24,2,1,1,18,91.65,209,209,0,success,repeticao_4_de_5
 clean-build-expanded,github_actions,51,25,2,4,0,6,91.65,209,209,0,success,repeticao_5_de_5;cobertura_derivada_jenkins
 clean-build-expanded,jenkins,46,23,1,1,1,18,91.65,209,209,0,success,repeticao_5_de_5
+full-heavy,github_actions,59,27,3,5,0,11,56.27,439,439,0,success,repeticao_1_de_5;cobertura_derivada_jenkins
+full-heavy,jenkins,54,34,2,1,1,27,56.27,439,439,0,success,repeticao_1_de_5
+full-heavy,github_actions,60,28,3,4,1,9,56.27,439,439,0,success,repeticao_2_de_5;cobertura_derivada_jenkins
+full-heavy,jenkins,56,33,2,1,1,27,56.27,439,439,0,success,repeticao_2_de_5
+full-heavy,github_actions,61,28,3,6,1,9,56.27,439,439,0,success,repeticao_3_de_5;cobertura_derivada_jenkins
+full-heavy,jenkins,58,33,2,1,1,27,56.27,439,439,0,success,repeticao_3_de_5
+full-heavy,github_actions,62,29,3,5,0,11,56.27,439,439,0,success,repeticao_4_de_5;cobertura_derivada_jenkins
+full-heavy,jenkins,60,33,2,1,1,27,56.27,439,439,0,success,repeticao_4_de_5
+full-heavy,github_actions,63,30,4,5,0,10,56.27,439,439,0,success,repeticao_5_de_5;cobertura_derivada_jenkins
+full-heavy,jenkins,62,33,2,1,1,27,56.27,439,439,0,success,repeticao_5_de_5
